@@ -1,0 +1,56 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © hasindusithmin64
+
+//@version=4
+study(title="Code Unity 1.0", shorttitle="Codeunity Strategy", overlay=true)
+
+shbb = input(false, title="Show Bolinger Bands")
+shbbs = input(true, title="Show BB Signals")
+sblue0 = color.new(color.blue, 0)
+sorange0 = color.new(color.orange, 0)
+//Bollinger Bands
+
+lengthbb = input(20, minval=1, group="Bollinger Bands")
+src = input(close, title="Source")
+mult = input(2.0, minval=0.001, maxval=50, title="StdDev", group="Bollinger Bands")
+basis = sma(src, lengthbb)
+dev = mult * stdev(src, lengthbb)
+upper = basis + dev
+lower = basis - dev
+offset = input(0, "Offset", type = input.integer, minval = -500, maxval = 500, group="Bollinger Bands")
+plot(shbb ? basis : na, "BB Basis", color=#FF6D00, offset = offset)
+pbb1 = plot(shbb ? upper : na, "BB Upper", color=#2962FF, offset = offset)
+pbb2 = plot(shbb ? lower : na, "BB Lower", color=#2962FF, offset = offset)
+fill(pbb1, pbb2, title = "BB Background", color=color.rgb(33, 150, 243, 95))
+
+// DEMA
+
+lengthd = input(15, minval=1, title="BB MA Length", group="BB Strategy MA")
+e1 = ema(close, lengthd)
+e2 = ema(e1, lengthd)
+dema = 2 * e1 - e2
+
+// Stoch
+
+periodK = input(9, title="%K Length", minval=1, group="BB Strategy Stoch")
+smoothK = input(3, title="%K Smoothing", minval=1, group="BB Strategy Stoch")
+periodD = input(3, title="%D Smoothing", minval=1), group="BB Strategy Stoch"
+k = sma(stoch(close, high, low, periodK), smoothK)
+d = sma(k, periodD)
+
+
+// RSI
+
+rsibb = rsi(close, 2)
+rsibbos = input(9, "BB RSI OS Level", group="BB RSI")
+rsibbob = input(91, "BB RSI OB Level", group="BB RSI")
+
+//BB Strategy
+
+
+shortbb = open > close and close < dema and (high > upper or high[1] > upper) and k[1] > 65 and (rsibb > rsibbob or rsibb[1] > rsibbob or rsibb[2] > rsibbob or rsibb[3] > rsibbob)
+longbb = open < close and close > dema and (low < lower or low[1] < lower) and k[1] < 35 and (rsibb < rsibbos or rsibb[1] < rsibbos or rsibb[2] < rsibbos or rsibb[3] < rsibbos)
+
+    
+plotshape(shbbs ? shortbb : na, style=shape.labeldown, color=sorange0, location=location.abovebar, size=size.tiny, title="Short Label", text= "SS", textcolor=color.white)
+plotshape(shbbs ? longbb : na, style=shape.labelup, color=sblue0, location=location.belowbar, size=size.tiny, title="Long Label", text= "BB", textcolor=color.white)
