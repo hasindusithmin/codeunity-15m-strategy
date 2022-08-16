@@ -18,7 +18,7 @@ for dt in data:
 candles = {"Time":Time,"Open":Open,"High":High,"Low":Low,"Close":Close}
 df = pd.DataFrame(candles)
 df['Dema'] = 2 * df.ta.ema(length=15) - df.ta.ema(close=df.ta.ema(length=15),length=15)
-df['Upper'] = df.ta.sma(length=20) + (2022-08-03 17:45:00	2.0 * df.ta.stdev(length=20))
+df['Upper'] = df.ta.sma(length=20) + (2.0 * df.ta.stdev(length=20))
 df['Lower'] = df.ta.sma(length=20) - (2.0 * df.ta.stdev(length=20))
 df.ta.stoch(high=df['High'],low=df['Low'],k=9,append=True)
 df.ta.sma(close=df['STOCHk_9_3_3'], length=3,append=True)
