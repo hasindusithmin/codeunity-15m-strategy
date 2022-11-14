@@ -1,14 +1,11 @@
-import httpx
+import requests
 import pandas as pd
+import pandas_ta as ta
 from datetime import datetime
 
-res = httpx.get("https://www.binance.com/api/v3/klines?symbol=BTCUSDT&interval=15m")
+res = requests.get("https://www.binance.com/api/v3/klines?symbol=BTCUSDT&interval=15m")
 data = res.json()
-Time = []
-Open = []
-High = []
-Low = []
-Close = []
+Time,Open,High,Low,Close = [],[],[],[],[]
 for dt in data:
   Time.append(datetime.utcfromtimestamp((float(dt[0])/1000)+19800).strftime('%Y-%m-%d %H:%M:%S'))
   Open.append(float(dt[1]))
